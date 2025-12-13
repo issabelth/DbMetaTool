@@ -35,8 +35,8 @@ namespace DbMetaTool.DbMethods
                 {
                     Name = domainName,
                     Type = reader["FieldType"]?.ToString() ?? string.Empty,
-                    Length = reader["FieldLength"] != DBNull.Value ? reader["FieldLength"].ToString() : string.Empty,
-                    DefaultValue = reader["DefaultValue"] != DBNull.Value ? reader["DefaultValue"].ToString() : string.Empty,
+                    Length = reader["FieldLength"] != DBNull.Value ? reader["FieldLength"]?.ToString() : string.Empty,
+                    DefaultValue = reader["DefaultValue"] != DBNull.Value ? reader["DefaultValue"]?.ToString() : string.Empty,
                     IsNullable = reader["NotNull"] == DBNull.Value
                 });
 
@@ -128,12 +128,20 @@ namespace DbMetaTool.DbMethods
             while (reader.Read())
             {
                 builder.Reset();
-                var procName = reader["RDB$PROCEDURE_NAME"].ToString().Trim();
+                var procName = reader["RDB$PROCEDURE_NAME"]?.ToString()?.Trim();
+                var procSource = reader["RDB$PROCEDURE_SOURCE"]?.ToString()?.Trim();
+
+                if (string.IsNullOrWhiteSpace(procName) ||
+                    string.IsNullOrWhiteSpace(procSource))
+                {
+                    Console.WriteLine("[ERROR] Puste parametry przy eksporcie procedur.");
+                    return;
+                }
 
                 var procedure = new ProcedureModel
                 {
                     Name = procName,
-                    Source = reader["RDB$PROCEDURE_SOURCE"].ToString().Trim(),
+                    Source = procSource,
                     Parameters = new List<string>()
                 };
 
@@ -157,18 +165,23 @@ namespace DbMetaTool.DbMethods
 
                 while (readerParams.Read())
                 {
-                    string? paramName = readerParams["RDB$PARAMETER_NAME"]?.ToString()?.Trim() ?? string.Empty;
-                    string? paramType = readerParams["RDB$TYPE_NAME"]?.ToString()?.Trim() ?? string.Empty;
+                    string? paramName = readerParams["RDB$PARAMETER_NAME"]?.ToString()?.Trim();
+                    string? paramType = readerParams["RDB$TYPE_NAME"]?.ToString()?.Trim();
+
+                    if (string.IsNullOrWhiteSpace(paramName) ||
+                        string.IsNullOrWhiteSpace(paramType))
+                    {
+                        Console.WriteLine("[ERROR] Puste parametry przy eksporcie procedur.");
+                        return;
+                    }
+
                     string? paramLength = readerParams["RDB$CHARACTER_LENGTH"]?.ToString()?.Trim() ?? string.Empty;
                     var domainName = FirebirdMapHelper.MapFirebirdType(paramType, paramLength);
 
                     var nullFlagValue = readerParams["RDB$NULL_FLAG"];
                     bool isNotNull = nullFlagValue != DBNull.Value && nullFlagValue != null && Convert.ToInt32(nullFlagValue) == 1;
 
-                    // IsNullable to zaprzeczenie isNotNull
-                    bool isNullable = !isNotNull;
-
-                    procedure.Parameters.Add($"{paramName} {domainName}{isNullable.ToSqlScript()}");
+                    procedure.Parameters.Add($"{paramName} {domainName}{(!isNotNull).ToSqlScript()}");
                 }
 
                 builder.AddProcedure(procedure);

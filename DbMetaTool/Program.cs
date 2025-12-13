@@ -152,6 +152,12 @@ namespace DbMetaTool
                     {
                         string sql = File.ReadAllText(file);
 
+                        if (string.IsNullOrWhiteSpace(sql))
+                        {
+                            Console.WriteLine("Pusta zawartość pliku. Pominięto.");
+                            continue;
+                        }
+
                         using (var cmd = new FbCommand(sql, conn))
                         {
                             cmd.ExecuteNonQuery();
@@ -270,6 +276,13 @@ namespace DbMetaTool
                         }
 
                         string script = File.ReadAllText(file);
+
+                        if (string.IsNullOrWhiteSpace(script))
+                        {
+                            Console.WriteLine("Pusta zawartość pliku. Pominięto.");
+                            continue;
+                        }
+
                         string errorInfo;
 
                         if (!CheckScriptSafety(script, out errorInfo))
