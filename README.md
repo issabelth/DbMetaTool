@@ -18,3 +18,7 @@ Aplikacja to „kopiarka struktur” dla baz danych systemu Firebird. Pozwala on
 - Gotowe! Możemy działać :)
 
 Aby zacząć, wpisz w Powershella komendę DbMetaTool. Wyświetlą Ci się wszystkie możliwe funkcje.
+
+### Uwagi
+
+Update działa jedynie dla Twoich własnych skryptów- nie są one generowane przez program.
