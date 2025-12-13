@@ -21,4 +21,5 @@ Aby zacząć, wpisz w Powershella komendę DbMetaTool. Wyświetlą Ci się wszys
 
 ### Uwagi
 
-Update działa jedynie dla Twoich własnych skryptów- nie są one generowane przez program.
+- Update działa jedynie dla Twoich własnych skryptów- nie są one generowane przez program.
+- Program wymagałby jeszcze refaktoringu, niektóre rzeczy były robione bez ładu :D
