@@ -7,9 +7,9 @@
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             string filePath = Path.Combine(baseDirectory, "ConnectionString.txt");
 
-            if (!Directory.Exists(filePath))
+            if (!File.Exists(filePath))
             {
-                Console.WriteLine($"Ścieżka {filePath} nie istnieje! " +
+                Console.WriteLine($"Plik {filePath} nie istnieje! " +
                     $"Czy na pewno dodałeś swój plik ConnectionString.txt zgodnie z instrukcją w README?");
                 return null;
             }
